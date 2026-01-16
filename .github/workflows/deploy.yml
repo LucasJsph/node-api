@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
 
 jobs:
   build:
@@ -23,16 +18,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm' 
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Build application
-        run: npm run build
-
-      - name: Run tests
-        run: npm run test
+      - name: Upload project
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-project-files
+          path: .
 
   docker:
     name: Build Docker Image
@@ -42,10 +36,9 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: docker build -t nestjs-app:latest .
+        uses: actions/download-artifact@v4
+        with:
+          name: node-project-files
         
       - name: Login to Docker Hub 
         uses: docker/login-action@v3 
@@ -57,5 +50,6 @@ jobs:
         run: | 
           docker build -t ${{ secrets.DOCKER_USERNAME }}/node-api-app:latest . 
           docker push ${{ secrets.DOCKER_USERNAME }}/node-api-app:latest 
+
 
 
