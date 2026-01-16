@@ -13,11 +13,8 @@ RUN npm install
 # Copier tout le reste du code source dans le conteneur
 COPY . .
 
-# Construire l'application
-RUN npm run build
-
 # Exposer le port
 EXPOSE 3000
 
 # Commande pour lancer l'application
-CMD ["node", "dist/main"]
+CMD ["npm", "start"]
